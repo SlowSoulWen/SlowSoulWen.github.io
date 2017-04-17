@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+    <meta name="description" content="这是温广的个人博客，记录自己生活的所见所得">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="http://oo917ps5l.bkt.clouddn.com/user.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          阅读Express源码 - 慢灵魂的博客
+        
+    </title>
+
+    <link rel="canonical" href="http://wenguangblog.com/2017/04/16/阅读Express源码/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('http://oo917ps5l.bkt.clouddn.com/14919799328.jpg')
+            /*post*/
+        
+    }
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <h2>阅读Express源码</h2>
+                        <h3 class="subheading">从最常见的路由定义开始</h3>
+                        <span class="meta">
+                            Posted by 温广 on
+                            2017-04-16
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">慢灵魂的博客</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">主页</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">关于我</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">文章</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">标签</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>Express 是一个基于 Node.js 平台的极简、灵活的 web 应用开发框架，它提供一系列强大的特性，帮助你创建各种 Web 和移动设备应用。<br>
+本文基于 Express 4.14.1</p>
+</blockquote>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E6%AD%BB%E7%A3%95Express%E6%BA%90%E7%A0%81.png" alt="Express"></p>
+<h2 id="开个头显得比较正式">开个头显得比较正式</h2>
+<p>从上学期起开始接触Node.js，陆陆续续看了许多有关node.js的书和博客，前段时间看完了朴灵写的 <a href="https://book.douban.com/subject/25768396/" target="_blank" rel="external">&lt;&lt;深入浅出Node.js&gt;&gt;</a>，神书一本，和其他一些介绍Node.js的书籍不一样的地方在于，它并非官方文档API的中文介绍+demo示例书，而是从原理出发，对Node的一些底层机制，包括Node最有特点的异步I/O，V8的垃圾回收等等都做了详细深入的介绍。这本书相当有深度，找个时间还要再看一次，并把读书笔记写在博客上。</p>
+<p>开始使用Express框架也是在上个寒假，那时候自己也一直想搭个博客，能用自己搭的博客写东西感觉就是和外面的妖艳贱货不一样啊，所以就决定用Node.js写个后台，前台就用Bootstrap简单粗暴地搭一个。自己边学边做花了一个寒假的时间，把博客系统搭了个七七八八（当然了不是现在用的这个），完成了一些最基本的功能。结果一到开学又忙起来，拖到现在感觉快烂尾了_(┐「ε:)_。当然一直拖除了开学之后有点忙以外，还有一个原因是写代码的时候有时碰到一些问题，往往需要我花很长的时间去解决，这让我怀疑自己是否真的了解了Node.js,或者是了解了Express？于是我决定花点时间再重新学习，之后再完成博客的收尾工作。</p>
+<p>所以前几天决定研究一下Express源码，之前搭博客的时候，都是参照了一些博客的代码，知道了这个东西是怎么用的，然后就拿着它用到天荒地老，这样不仅对自己毫无益处，限制自己的视野，一旦自己有新需求，或者碰到新问题的时候，必然束手无策。</p>
+<h2 id="从简单的路由请求入手">从简单的路由请求入手</h2>
+<p>要阅读源码，我们只需要在项目根目录的 <code>node_modules</code>文件夹里找到 <code>Express</code> 即可。打开<code>Express</code>文件夹，里面的目录结构如下:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">-<span class="ruby"> lib/</span></div><div class="line">    -<span class="ruby"> middleware/</span></div><div class="line">        -<span class="ruby"> init.js</span></div><div class="line">        -<span class="ruby"> query.js</span></div><div class="line">    -<span class="ruby"> router/</span></div><div class="line">        -<span class="ruby"> index.js</span></div><div class="line">        -<span class="ruby"> layer.js</span></div><div class="line">        -<span class="ruby"> route.js</span></div><div class="line">    -<span class="ruby"> application.js</span></div><div class="line">    -<span class="ruby"> express.js</span></div><div class="line">    -<span class="ruby"> request.js</span></div><div class="line">    -<span class="ruby"> response.js</span></div><div class="line">    -<span class="ruby"> utils.js</span></div><div class="line">    -<span class="ruby"> view.js</span></div><div class="line">-<span class="ruby"> index.js</span></div><div class="line"><span class="comment">// 根目录还有一些其他文件，与源码无关，这里省略</span></div></pre></td></tr></table></figure>
+<p>可以看到根目录的<code>index.js</code>就是整个框架的入口文件，打开它:</p>
+<figure class="highlight javascript"><figcaption><span>index.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">'use strict'</span>;</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = <span class="built_in">require</span>(<span class="string">'./lib/express'</span>);</div></pre></td></tr></table></figure>
+<p>然后发现他只是导出了另一个文件_(┐「ε:)_。继续打开<code>./lib/express</code>文件，可以看到导出的<code>createApplication</code>就是示例代码中的<code>express</code>方法：</p>
+<figure class="highlight javascript"><figcaption><span>express.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>).EventEmitter;</div><div class="line"><span class="keyword">var</span> mixin = <span class="built_in">require</span>(<span class="string">'merge-descriptors'</span>);</div><div class="line"><span class="keyword">var</span> proto = <span class="built_in">require</span>(<span class="string">'./application'</span>); </div><div class="line"><span class="keyword">var</span> Route = <span class="built_in">require</span>(<span class="string">'./router/route'</span>); </div><div class="line"><span class="keyword">var</span> Router = <span class="built_in">require</span>(<span class="string">'./router'</span>);  </div><div class="line"><span class="keyword">var</span> req = <span class="built_in">require</span>(<span class="string">'./request'</span>);</div><div class="line"><span class="keyword">var</span> res = <span class="built_in">require</span>(<span class="string">'./response'</span>);</div><div class="line"></div><div class="line"><span class="comment">// ... ... </span></div><div class="line"></div><div class="line">exports = <span class="built_in">module</span>.exports = createApplication;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">createApplication</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> app = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">    app.handle(req, res, next);</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  mixin(app, EventEmitter.prototype, <span class="literal">false</span>);</div><div class="line">  mixin(app, proto, <span class="literal">false</span>);</div><div class="line"></div><div class="line">  app.request = &#123; <span class="attr">__proto__</span>: req, <span class="attr">app</span>: app &#125;;</div><div class="line">  app.response = &#123; <span class="attr">__proto__</span>: res, <span class="attr">app</span>: app &#125;;</div><div class="line"></div><div class="line">  app.init();</div><div class="line">  <span class="keyword">return</span> app;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// ... ... </span></div></pre></td></tr></table></figure>
+<p><code>createApplication()</code>定义了一个函数<code>app</code>并在最后返回了它。此时会有一个疑问，<code>app.handle()</code>这个属性在哪里定义的呢？</p>
+<p>先往下读，发现代码执行了<code>mixin(app, EventEmitter.prototype, false)</code>和<code>mixin(app, proto, false)</code>。<code>mixin</code>是一个合并工具，这两行代码的作用是将<code>EventEmitter.prototype</code>和<code>proto</code>的属性合并到<code>app</code>上。那<code>app</code>的<code>handle</code>属性就应该属于<code>EventEmitter.prototype</code>或<code>proto</code>中的一个了。</p>
+<p>事实上<code>app.handle</code>存在于<code>proto</code>对象(’./application.js’)中，它的具体代码如下：</p>
+<figure class="highlight kotlin"><figcaption><span>./application.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">app.handle = function handle(req, res, callback) &#123;</div><div class="line">  <span class="keyword">var</span> router = <span class="keyword">this</span>._router;</div><div class="line"></div><div class="line">  <span class="comment">// final handler</span></div><div class="line">  <span class="keyword">var</span> done = callback || finalhandler(req, res, &#123;</div><div class="line">    env: <span class="keyword">this</span>.<span class="keyword">get</span>(<span class="string">'env'</span>),</div><div class="line">    onerror: logerror.bind(<span class="keyword">this</span>)</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  <span class="comment">// no routes</span></div><div class="line">  <span class="keyword">if</span> (!router) &#123;</div><div class="line">    debug(<span class="string">'no routes defined on app'</span>);</div><div class="line">    done();</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;             </div><div class="line"></div><div class="line">  router.handle(req, res, done);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>浏览一下<code>application.js</code>文件就会发现，通过 application.js 文件合并到<code>app</code>的所有属性方法，其实就是官方文档API中<code>Application</code>接口部分的所有内容。</p>
+<h2 id="定义路由时发生了什么">定义路由时发生了什么</h2>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</div><div class="line"><span class="keyword">var</span> app = express();</div><div class="line"></div><div class="line"><span class="comment">// respond with "hello world" when a GET request is made to the homepage</span></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">  res.send(<span class="string">'hello world'</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>上述代码是Express官方网站给出的搭建路由的例子。知道了<code>app</code>，继续来看<code>app.get('/', function(req, res) { res.send('hello world');})</code>。要想知道<code>app.get()</code>做了些什么，当然还得在 application.js 文件中找，然而翻遍整个文件，我都没有找到<code>app.get</code>属性的定义。</p>
+<p>其实<code>app</code>的<code>get</code>属性确实是定义在<code>application.js</code>文件中的，只不过它是通过动态定义的：</p>
+<figure class="highlight javascript"><figcaption><span>./application.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">methods.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">method</span>)</span>&#123;</div><div class="line">  app[method] = <span class="function"><span class="keyword">function</span>(<span class="params">path</span>)</span>&#123;</div><div class="line">    <span class="keyword">if</span> (method === <span class="string">'get'</span> &amp;&amp; <span class="built_in">arguments</span>.length === <span class="number">1</span>) &#123;</div><div class="line">      <span class="comment">// app.get(setting)</span></div><div class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.set(path);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">this</span>.lazyrouter();</div><div class="line"></div><div class="line">    <span class="keyword">var</span> route = <span class="keyword">this</span>._router.route(path);</div><div class="line">    route[method].apply(route, slice.call(<span class="built_in">arguments</span>, <span class="number">1</span>));</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">  &#125;;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p><code>http</code>的请求方法有多种，包括get，post，delete等等，上述代码为每种请求都定义了对应的方法。</p>
+<p>当执行<code>app.get('/', function (req, res) { res.send('Hello World!');})</code>的时候，首先判断<code>method</code>是否是<code>get</code>并且只有一个参数传入，如果是的话执行的不是定义路由，而是执行API的另一个方法<code>app.get(setting)</code>，该方法用于获取设置项 setting 的值。否则，执行<code>lazyrouter()</code>方法，用于实例化一个<code>Router</code>对象，并把它赋值给<code>app._router</code>。以下是<code>lazyrouter()</code>方法的代码：</p>
+<figure class="highlight kotlin"><figcaption><span>./application.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">app.lazyrouter = function lazyrouter() &#123;</div><div class="line">  <span class="keyword">if</span> (!<span class="keyword">this</span>._router) &#123;</div><div class="line">    <span class="keyword">this</span>._router = new Router(&#123;</div><div class="line">      caseSensitive: <span class="keyword">this</span>.enabled(<span class="string">'case sensitive routing'</span>),</div><div class="line">      strict: <span class="keyword">this</span>.enabled(<span class="string">'strict routing'</span>)</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    <span class="keyword">this</span>._router.use(query(<span class="keyword">this</span>.<span class="keyword">get</span>(<span class="string">'query parser fn'</span>)));</div><div class="line">    <span class="keyword">this</span>._router.use(middleware.init(<span class="keyword">this</span>));</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>可以发现<code>Router</code>对象只会被实例化一次。<br>
+紧接着调用这个<code>Router</code>对象的<code>route</code>方法，参数<code>path</code>是路由路径(这里是’/’)：</p>
+<figure class="highlight actionscript"><figcaption><span>router/index.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">proto.route = <span class="function"><span class="keyword">function</span> <span class="title">route</span><span class="params">(path)</span> </span>&#123;</div><div class="line">  <span class="keyword">var</span> route = <span class="keyword">new</span> Route(path); </div><div class="line"></div><div class="line">  <span class="keyword">var</span> layer = <span class="keyword">new</span> Layer(path, &#123;</div><div class="line">    sensitive: <span class="keyword">this</span>.caseSensitive,</div><div class="line">    strict: <span class="keyword">this</span>.strict,</div><div class="line">    end: <span class="literal">true</span></div><div class="line">  &#125;, route.dispatch.bind(route));</div><div class="line"></div><div class="line">  layer.route = route;</div><div class="line"></div><div class="line">  <span class="keyword">this</span>.stack.push(layer);</div><div class="line">  <span class="keyword">return</span> route;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>在<code>lazyrouter</code>方法中，实例化了一个<code>Route</code>和一个<code>layer</code>，并让<code>layer.route</code>指向了刚刚创建的<code>Route</code>对象。这里必须着重说一下<code>Router</code>，<code>Route</code>和<code>layer</code>三者的关系：</p>
+<blockquote>
+<p>1、Router 是 “router/index.js” 文件的导出对象，Route 是 “router/route.js” 文件的导出对象。</p>
+</blockquote>
+<blockquote>
+<p>2、Router 可以看作是一个中间件容器，不仅可以存放路由中间件（Route），还可以存放其他中间件，在 lazyrouter 方法中实例化 Router后会首先添加两个中间件：query 和 init；而 Route 仅仅是路由中间件，封装了路由信息。Router 和 Route都各自维护了一个 stack 数组，该数组就是用来存放中间件和路由的。</p>
+</blockquote>
+<blockquote>
+<p>3、Router和 Route 都有一个 stack 数组， Router和 Route 的 stack是有差别的，这个差别主要体现在存放的 layer（layer是用来封装中间件的一个数据结构）不太一样。Router.stack 中的 layer存放了路由中间件对应的路由路径和 route对象，或者是非路由中间件的处理程序。Route.stack 存放的是路由中间件的处理程序。</p>
+</blockquote>
+<p>这里引用 <a href="https://cnodejs.org/topic/545720506537f4d52c414d87" target="_blank" rel="external">《从express源码中探析其路由机制》</a> 文章中的分析图来说明Router和Route中layer的区别：</p>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E9%98%85%E8%AF%BBExpress%E6%BA%90%E7%A0%81.jpg" alt="Router.stack中的layer和Route.stack中的layer的区别"></p>
+<p><code>Router.stack</code> 里面的<code>layer</code>通过route字段指向了路由对象，那么这样一来，<code>Router.stack</code>就和<code>Route.stack</code>发生了关联，关联后的示意模型如下图所示（依旧来源于<a href="https://cnodejs.org/topic/545720506537f4d52c414d87" target="_blank" rel="external">《从express源码中探析其路由机制》</a> ）：</p>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E4%B8%80%E8%B5%B7%E6%9D%A5%E8%AF%BBExpress%E6%BA%90%E7%A0%81.jpg" alt="关联后的示意模型"></p>
+<p>在定义路由中间件的过程中，Router.stack数组中的<code>layer</code>存放了路由路径，并通过<code>layer.route</code>指向了存放了请求方法的<code>Route</code>对象，而<code>Route</code>对象不仅存放着请求对象，在他的<code>Route.stack</code>数组中还存放了路由的处理程序，从而实现了关联。</p>
+<p>回到文档示例的那个<code>app.get()</code>方法，他的大致流程如下：<br>
+<img src="http://oo917ps5l.bkt.clouddn.com/Express%E8%B7%AF%E7%94%B1%E5%AE%9A%E4%B9%89%E6%B5%81%E7%A8%8B.png" alt="get路由定义流程"></p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="https://cnodejs.org/topic/545720506537f4d52c414d87" target="_blank" rel="external">《从express源码中探析其路由机制》</a><br>
+<a href="http://syaning.com/2015/10/22/express-in-depth/" target="_blank" rel="external">《Express深入解读》</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                </ul>
+
+                
+                <!-- 友言评论 -->
+                    <div id="uyan_frame"></div>
+                    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2130954"></script>
+                <!-- 友言评论  end -->
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#开个头显得比较正式"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">开个头显得比较正式</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#从简单的路由请求入手"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">从简单的路由请求入手</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#定义路由时发生了什么"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">定义路由时发生了什么</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考资料"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">参考资料</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Node.js" title="Node.js">Node.js</a>
+                        
+                          <a class="tag" href="/tags/#Express" title="Express">Express</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/5381358711">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/SlowSoulWen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 温广 2017 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://wenguangblog.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://wenguangblog.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
