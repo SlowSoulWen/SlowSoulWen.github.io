@@ -134,7 +134,7 @@
 
                         
                         <li>
-                            <a href="/tags/">标签</a>
+                            <a href="/about/">关于我</a>
                         </li>
                         
                     
@@ -148,7 +148,7 @@
 
                         
                         <li>
-                            <a href="/about/">关于我</a>
+                            <a href="/tags/">标签</a>
                         </li>
                         
                     
@@ -226,7 +226,8 @@
 <p>看完这两段代码也就基本把源码都看完了。从上面的代码可以看出以下几点:</p>
 <p>1、Lazy Load不仅仅支持img标签。当你给一个div标签添加了<code>lazy</code>的class并设置<code>data-original</code>属性时，插件会将图片设置为div的<code>background-image</code>，也就是将该图片作为div的背景图。<br>
 2、LazyLoad使用了代理模式，在图片完成加载之前会使用另一张图片先代替它显示在页面上。插件将这张代理图片设置在了<code>settings.placeholder</code>上。<br>
-3、一旦图片加载完成，程序会将它从<code>element</code>数组中剔除出去，提高下一次遍历的速度和执行效率。</p>
+3、一旦图片加载完成，程序会将它从<code>element</code>数组中剔除出去，提高下一次遍历的速度和执行效率。<br>
+4、不应该给需要惰性加载的<code>img</code>标签添加<code>src</code>属性，因为插件需要在文档渲染完成后才能执行，如果图片存在<code>src</code>属性，在渲染文档时便会向服务器发送一遍请求，而在插件执行时又会重新请求一遍，这样不仅无法达到减小服务器压力的目的，反而加重了服务器的负载，让插件彻底成为画蛇添足的工具。</p>
 
                 
 
