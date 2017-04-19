@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+    <meta name="description" content="这是温广的个人博客，记录自己生活的所见所得">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="http://oo917ps5l.bkt.clouddn.com/user.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Lazy Load实现惰性加载 - 慢灵魂的博客
+        
+    </title>
+
+    <link rel="canonical" href="http://wenguangblog.com/2017/04/19/Lazy Load实现懒加载/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('http://oo917ps5l.bkt.clouddn.com/14919799328.jpg')
+            /*post*/
+        
+    }
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <h2>Lazy Load实现惰性加载</h2>
+                        <h3 class="subheading">可惜用不到自己的博客上来</h3>
+                        <span class="meta">
+                            Posted by 温广 on
+                            2017-04-19
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">慢灵魂的博客</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">主页</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">关于我</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">文章</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">标签</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="惰性加载">惰性加载</h2>
+<p>惰性加载技术很常见，尤其是在一些比较大型的电商类网站上。<br>
+当用户访问一个页面的时候，这个页面可能有几十张图片需要展示，页面在加载的时候每一张图片都会向服务器请求数据。所有请求在同一时间一起发送带来的问题有很多，例如页面的加载速度可能会变慢，由于每个页面都同时发送了几十条请求，如果同一时间访问的用户很多，服务器压力也会非常大。</p>
+<p>其实对于用户而言，他能看到的只有浏览器窗口所展示的内容，窗口之外的页面用户无法看到。既然如此，我们可以优先处理用户正在浏览的图片，而那些尚未出现在窗口中的图片我们可以先不加载，等到用户下拉页面需要浏览时才发送加载请求。这样我们就可以将原本会集中发送的请求分时段分批次处理，一来节省了带宽，可以提高图片的加载速度，二来减轻了服务器的压力。而且对于用户来说访问一个页面往往不会浏览全部内容，而是在浏览了一半时便跳转到了其他页面，这种方法也能帮用户节省流量。这就是惰性加载。</p>
+<p>网上有一些插件实现了惰性加载技术，比如这篇文章要说的<a href="https://www.appelsiini.net/projects/lazyload" target="_blank" rel="external">Lazy Laod</a>。</p>
+<h2 id="下载">下载</h2>
+<p>可以通过bower或者npm下载Lazy Load插件</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="keyword">bower </span><span class="keyword">install </span><span class="keyword">jquery.lazyload</span></div><div class="line">$ npm <span class="keyword">install </span><span class="keyword">jquery-lazyload</span></div></pre></td></tr></table></figure>
+<h2 id="使用">使用</h2>
+<p>使用Lazy Laod插件的简单例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;img <span class="class"><span class="keyword">class</span></span>=<span class="string">"lazy"</span> data-original=<span class="string">"img/example.jpg"</span> width=<span class="string">"640"</span> height=<span class="string">"480"</span>&gt;</div><div class="line"></div><div class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></span></div><div class="line"> $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  $(<span class="string">"img.lazy"</span>).lazyload();</div><div class="line"> &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>首先你必须要给每个需要实现惰性加载的<code>img</code>标签添加上类属性<code>lazy</code>。<br>
+并且将图片路径赋给自定义属性<code>data-original</code>，而不是赋在<code>src</code>属性上（注意这些标签并没有src属性）。</p>
+<p>此外文档还提供了一些配置项供我们做一些自定义的操作：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;img <span class="class"><span class="keyword">class</span></span>=<span class="string">"lazy"</span> data-original=<span class="string">"img/example.jpg"</span> width=<span class="string">"640"</span> height=<span class="string">"480"</span>&gt;</div><div class="line"></div><div class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></span></div><div class="line"> $(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  $(<span class="string">"img.lazy"</span>).lazyload(&#123;</div><div class="line">    <span class="comment">//  版本:  1.9.7</span></div><div class="line">    <span class="comment">//	右边都是默认值</span></div><div class="line">    threshold       : <span class="number">0</span>,          <span class="comment">// 在图片距离视口threshold(px)之内就开始加载</span></div><div class="line">    event           : <span class="string">"scroll"</span>,   <span class="comment">// 发送请求的触发方式，默认是"scroll"，可以是"click"</span></div><div class="line">    effect          : <span class="string">"show"</span>,     <span class="comment">// 图片显示的动画效果，可以设置为"fadeIn"使之有淡入效果</span></div><div class="line">    effectspeed     : <span class="literal">undefined</span>,  <span class="comment">// 动画效果时间</span></div><div class="line">    data_attribute  : <span class="string">"original"</span>, <span class="comment">// 自定义属性名，可以改成你想要的名称</span></div><div class="line">    skip_invisible  : <span class="literal">false</span>,      <span class="comment">// 跳过隐藏的图片。图片不可见时(如 display:none)，不强制加载</span></div><div class="line">    failure_limit   : <span class="number">0</span>,          <span class="comment">/* 容差范围。页面滚动时，Lazy Load 会遍历延迟加载的图</span></div><div class="line">                                     片，检查是否在显示区域内，默认找到第1图片时，就终</div><div class="line">                                     止遍历。因为 Lazy Load 认为图片的排序是与HTML 中的</div><div class="line">                                     代码中的排序相同，但是也可能会出现例外，通过该值来</div><div class="line">                                     扩大容差范围*/</div><div class="line">                                 </div><div class="line">  &#125;);</div><div class="line"> &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="原理">原理</h2>
+<p>Lazy Load实现惰性加载的方法比较简单，判断图片是否进入了浏览器视口，如果是就发送请求加载它。下面是这个插件实现的主要逻辑：</p>
+<figure class="highlight javascript"><figcaption><span>jquery.lazyload.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> counter = <span class="number">0</span>;</div><div class="line">    <span class="comment">//	遍历img[class="lazy"]元素</span></div><div class="line">    elements.each(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> $<span class="keyword">this</span> = $(<span class="keyword">this</span>);</div><div class="line">        <span class="keyword">if</span> (settings.skip_invisible &amp;&amp; !$<span class="keyword">this</span>.is(<span class="string">":visible"</span>)) &#123;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> ($.abovethetop(<span class="keyword">this</span>, settings) ||</div><div class="line">            $.leftofbegin(<span class="keyword">this</span>, settings)) &#123;</div><div class="line">            <span class="comment">// 图片在视口上方或者左边</span></div><div class="line">                <span class="comment">/* Nothing. */</span></div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!$.belowthefold(<span class="keyword">this</span>, settings) &amp;&amp;</div><div class="line">            !$.rightoffold(<span class="keyword">this</span>, settings)) &#123;</div><div class="line">                <span class="comment">// 图片在视口内，执行发布的appear</span></div><div class="line">                $<span class="keyword">this</span>.trigger(<span class="string">"appear"</span>);</div><div class="line">                <span class="comment">/* if we found an image we'll load, reset the counter */</span></div><div class="line">                counter = <span class="number">0</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// 图片在视口下方或者右边（用户尚未浏览）</span></div><div class="line">            <span class="keyword">if</span> (++counter &gt; settings.failure_limit) &#123;</div><div class="line">            	<span class="comment">// 如果遍历的数量大于设定值，停止遍历</span></div><div class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight php"><figcaption><span>jquery.lazyload.js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 遍历元素</span></div><div class="line">this.each(<span class="function"><span class="keyword">function</span><span class="params">(index)</span> </span>&#123;</div><div class="line">    <span class="keyword">var</span> <span class="keyword">self</span> = this;</div><div class="line">    <span class="keyword">var</span> $self = $(<span class="keyword">self</span>);</div><div class="line">    <span class="keyword">self</span>.loaded = <span class="keyword">false</span>; <span class="comment">// 记录该图片是否加载完成</span></div><div class="line"></div><div class="line">    <span class="comment">/* If no src attribute given use data:uri. */</span></div><div class="line">    <span class="comment">/* 如果img标签不存在src属性，使用settings.placeholder图片代替它 */</span></div><div class="line">    <span class="keyword">if</span> ($self.attr(<span class="string">"src"</span>) === undefined || $self.attr(<span class="string">"src"</span>) === <span class="keyword">false</span>) &#123;</div><div class="line">        <span class="keyword">if</span> ($self.is(<span class="string">"img"</span>)) &#123;</div><div class="line">            $self.attr(<span class="string">"src"</span>, settings.placeholder);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/* When appear is triggered load original image. */</span></div><div class="line">    <span class="comment">/* 发布一个appear事件，大体流程为先用代理图片显示，创建一个img属性请求真正的图片，当图片加载完成后取消代理，并将该元素从element中删掉，提高下次遍历的效率 */</span></div><div class="line">    $self.one(<span class="string">"appear"</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!this.loaded) &#123;</div><div class="line">            <span class="keyword">if</span> (settings.appear) &#123;</div><div class="line">                <span class="keyword">var</span> elements_left = elements.length;</div><div class="line">                settings.appear.call(<span class="keyword">self</span>, elements_left, settings);</div><div class="line">            &#125;</div><div class="line">            $(<span class="string">"&lt;img /&gt;"</span>)</div><div class="line">                .bind(<span class="string">"load"</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">                    <span class="keyword">var</span> original = $self.attr(<span class="string">"data-"</span> + settings.data_attribute);</div><div class="line">                    $self.hide();</div><div class="line">                    <span class="keyword">if</span> ($self.is(<span class="string">"img"</span>)) &#123;</div><div class="line">                        $self.attr(<span class="string">"src"</span>, original);</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        $self.css(<span class="string">"background-image"</span>, <span class="string">"url('"</span> + original + <span class="string">"')"</span>);</div><div class="line">                    &#125;</div><div class="line">                    $self[settings.effect](settings.effect_speed);</div><div class="line"></div><div class="line">                    <span class="keyword">self</span>.loaded = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">                    <span class="comment">/* Remove image from array so it is not looped next time. */</span></div><div class="line">                    <span class="keyword">var</span> temp = $.grep(elements, <span class="function"><span class="keyword">function</span><span class="params">(element)</span> </span>&#123;</div><div class="line">                        <span class="keyword">return</span> !element.loaded;</div><div class="line">                    &#125;);</div><div class="line">                    elements = $(temp);</div><div class="line"></div><div class="line">                    <span class="keyword">if</span> (settings.load) &#123;</div><div class="line">                        <span class="keyword">var</span> elements_left = elements.length;</div><div class="line">                        settings.load.call(<span class="keyword">self</span>, elements_left, settings);</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div><div class="line">                .attr(<span class="string">"src"</span>, $self.attr(<span class="string">"data-"</span> + settings.data_attribute));</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    <span class="comment">/* 如果用户自定义了触发事件，比如设置为click点击触发，就重新绑定 */</span></div><div class="line">    <span class="keyword">if</span> (<span class="number">0</span> !== settings.event.indexOf(<span class="string">"scroll"</span>)) &#123;</div><div class="line">        $self.bind(settings.event, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (!<span class="keyword">self</span>.loaded) &#123;</div><div class="line">                $self.trigger(<span class="string">"appear"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>看完这两段代码也就基本把源码都看完了。从上面的代码可以看出以下几点:</p>
+<p>1、Lazy Load不仅仅支持img标签。当你给一个div标签添加了<code>lazy</code>的class并设置<code>data-original</code>属性时，插件会将图片设置为div的<code>background-image</code>，也就是将该图片作为div的背景图。<br>
+2、LazyLoad使用了代理模式，在图片完成加载之前会使用另一张图片先代替它显示在页面上。插件将这张代理图片设置在了<code>settings.placeholder</code>上。<br>
+3、一旦图片加载完成，程序会将它从<code>element</code>数组中剔除出去，提高下一次遍历的速度和执行效率。</p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2017/04/16/阅读Express源码/" data-toggle="tooltip" data-placement="top" title="阅读Express源码">&larr; 上一篇</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                
+                <!-- 友言评论 -->
+                    <div id="uyan_frame"></div>
+                    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2130954"></script>
+                <!-- 友言评论  end -->
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">目录</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#惰性加载"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">惰性加载</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#下载"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">下载</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">使用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#原理"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">原理</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#懒加载" title="懒加载">懒加载</a>
+                        
+                          <a class="tag" href="/tags/#Lazy Load" title="Lazy Load">Lazy Load</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/5381358711">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/SlowSoulWen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 温广 2017 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://wenguangblog.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://wenguangblog.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
