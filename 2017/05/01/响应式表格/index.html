@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+    <meta name="description" content="这是温广的个人博客，记录自己生活的所见所得">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="http://oo917ps5l.bkt.clouddn.com/user.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          响应式表格 - 慢灵魂的博客
+        
+    </title>
+
+    <link rel="canonical" href="http://wenguangblog.com/2017/05/01/响应式表格/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('http://oo917ps5l.bkt.clouddn.com/14919799328.jpg')
+            /*post*/
+        
+    }
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <h2>响应式表格</h2>
+                        <h3 class="subheading"></h3>
+                        <span class="meta">
+                            Posted by 温广 on
+                            2017-05-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">慢灵魂的博客</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">主页</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">文章</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">关于我</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">标签</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>最近在画一个医院的后台管理系统的页面，内容蛮简单的，只是对方要求能做成响应式的，能在微信公众号方便手机操作。</p>
+<p>我还是选用了bootstrap框架去做，省时省力。后台管理页面基本都是由各种表格构成，然而bootstrap对于表格的响应式做的其实并不够好，只是简单的采用百分比的形式让其自适应，其他的就没做更多的处理了。如果表格的字段过多，在屏幕压缩变窄的过程中，表格会有一个最小宽度，一旦低于这个最小宽度表格便不会再压缩了，这个时候的宽度往往是大于手机屏幕宽度的，使用者最后还是得像浏览一般网页那样左右滑动来看，很麻烦。</p>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E5%93%8D%E5%BA%94%E5%BC%8F%E8%A1%A8%E6%A0%BC.gif" alt="响应式表格"></p>
+<p>压缩表格让其自适应尽管是个不错的方法，但对于小屏幕，表格压缩还会让表格内容往下挤，最终呈现出来的效果往往不如人意。一个好的解决方法是在小屏幕时让<code>tr</code>和<code>td</code>设置为块级元素，让其独占一行，如同上面图片的第三第四种方法，这样就能解决响应式表格的大部分问题。</p>
+<p>第三第四种方法的实现非常容易，小屏幕时隐藏掉表格的表头部分(<code>thead</code>部分)，并把数据部分设置为块级元素。只要几行代码就搞定了：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@<span class="keyword">media</span> only screen and ( max-width:<span class="number">768px</span>) &#123;</div><div class="line">    <span class="selector-tag">table</span> <span class="selector-tag">tbody</span>,</div><div class="line">    <span class="selector-tag">table</span> <span class="selector-tag">tbody</span> <span class="selector-tag">tr</span>,</div><div class="line">    <span class="selector-tag">table</span> <span class="selector-tag">tbody</span> <span class="selector-tag">tr</span> <span class="selector-tag">th</span>,</div><div class="line">    <span class="selector-tag">table</span> <span class="selector-tag">tbody</span> <span class="selector-tag">tr</span> <span class="selector-tag">th</span> <span class="selector-tag">td</span> &#123;</div><div class="line">        <span class="attribute">display</span>: block;</div><div class="line">    &#125;;</div><div class="line">    <span class="selector-tag">table</span> <span class="selector-tag">thead</span> &#123;</div><div class="line">        <span class="attribute">display </span>: none;</div><div class="line">    &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E5%93%8D%E5%BA%94%E5%BC%8F%E8%A1%A8%E6%A0%BC2.gif" alt="响应式表格2"></p>
+<p>这样做还是有不好的地方，因为隐藏了表头部分，使得每一项数据的意义不明确。解决方案也是有的，想办法在每一项数据前面添加相应的数据字段就可以了。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(1)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"姓名"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(2)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"性别"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(3)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"年龄"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(4)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"职务"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(5)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"所属科室"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(6)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"电话号码"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(7)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"添加时间"</span>; &#125; </div><div class="line"><span class="selector-tag">td</span><span class="selector-pseudo">:nth-of-type(8)</span><span class="selector-pseudo">:before</span> &#123; <span class="attribute">content</span>: <span class="string">"操作"</span>; &#125; </div><div class="line">&lt;!<span class="selector-tag">--</span>其他样式部分此处省略<span class="selector-tag">--</span>&gt;</div></pre></td></tr></table></figure>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E5%93%8D%E5%BA%94%E5%BC%8F%E8%A1%A8%E6%A0%BC3.gif" alt="响应式表格3"></p>
+<p>这种方法带来的另一个问题是会让页面变得很长，如果一页表格有20条数据，那么使用者翻起来将会非常的麻烦。这种情况我们可以配合使用js改进我们的响应式表格：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--html部分新增一下内容--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">h3</span> <span class="attr">class</span>=<span class="string">"show-mobile"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"col-md-3 form-inline"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">label</span>&gt;</span>显示字段：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"select-label"</span> <span class="attr">class</span>=<span class="string">"form-control select"</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"all"</span>&gt;</span>所有<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">select</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">h3</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&lt;!--js部分--&gt;</div><div class="line"><span class="meta">"use strict"</span>;</div><div class="line">$(<span class="built_in">document</span>).ready(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    addField();</div><div class="line"></div><div class="line">    $(<span class="string">"#select-label"</span>).change(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">let</span> value = $(<span class="string">"#select-label"</span>).find(<span class="string">"option:selected"</span>).val();</div><div class="line">        <span class="keyword">if</span>(value == <span class="string">"all"</span>) &#123;</div><div class="line">            <span class="comment">//  显示所有字段</span></div><div class="line">            $(<span class="string">"table tbody tr td"</span>).fadeIn();</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        $(<span class="string">"table tbody tr td"</span>).css(<span class="string">"display"</span>,<span class="string">"none"</span>);</div><div class="line">        $(<span class="string">`table tbody tr td:nth-of-type(<span class="subst">$&#123;value&#125;</span>)`</span>).each(<span class="function">(<span class="params">index,obj</span>) =&gt;</span> &#123;</div><div class="line">            $(obj).fadeIn();</div><div class="line">        &#125;)</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    $(<span class="string">"table tbody tr"</span>).on(<span class="string">"click"</span>,<span class="string">'td'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        $(<span class="keyword">this</span>).parent().find(<span class="string">"td"</span>).fadeIn();</div><div class="line">    &#125;)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">addField</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">let</span> count = <span class="number">1</span>;</div><div class="line">        $(<span class="string">"table thead tr td"</span>).each(<span class="function"><span class="keyword">function</span>(<span class="params">index,obj</span>) </span>&#123;</div><div class="line">            $(<span class="string">"#select-label"</span>).append(<span class="string">`&lt;option value="<span class="subst">$&#123;count++&#125;</span>"&gt;<span class="subst">$&#123;$(obj).html()&#125;</span>&lt;/option&gt;`</span>);</div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<p><img src="http://oo917ps5l.bkt.clouddn.com/%E5%93%8D%E5%BA%94%E5%BC%8F%E8%A1%A8%E6%A0%BC4.gif" alt="响应式表格4"></p>
+<p>使用者翻阅表格的时候往往也是先找某一项，找到之后才具体看其他的字段信息。这种改进方法可以方便使用者筛选查阅，也能减少长页面带来的不好的使用体验。</p>
+<p>最后，以上的demo你可以在<a href="https://codepen.io/SlowSoulWen/pen/BRRYVX" target="_blank" rel="external">【这里】</a>看到具体的代码实现。</p>
+<p>另外，还有一个别人写的很棒的响应式表格demo也可以在<a href="http://codepen.io/team/css-tricks/pen/PNpMaj" target="_blank" rel="external">【这里】</a>看到。</p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2017/04/19/Lazy Load实现懒加载/" data-toggle="tooltip" data-placement="top" title="Lazy Load实现惰性加载">&larr; 上一篇</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                
+                <!-- 友言评论 -->
+                    <div id="uyan_frame"></div>
+                    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2130954"></script>
+                <!-- 友言评论  end -->
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#响应式表格" title="响应式表格">响应式表格</a>
+                        
+                          <a class="tag" href="/tags/#html,css,js," title="html,css,js,">html,css,js,</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/5381358711">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/SlowSoulWen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 温广 2017 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://wenguangblog.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://wenguangblog.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
